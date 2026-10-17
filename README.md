@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CivicConnect: AI Crowd Safety & Resilient Civic Infrastructure
 
-## Getting Started
+CivicConnect unifies legal verified public events, computer-vision crowd safety, and resilient offline communication in one bespoke platform.
 
-First, run the development server:
+## Architecture
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+The platform is strictly structured into **two portals**:
+
+```
+/            Portal Chooser ("I'm a Citizen" / "I'm an Admin")
+/app/*       Public Portal (Citizens & Organizers, mobile-first, 5 tabs)
+             - Home (Nearby verified events, Protest Hub map, announcements)
+             - Events (Discovery, guidelines, verification status timeline)
+             - Communities (Forums, participatory polls, organizers)
+             - Connect (Broadcasts, Bluetooth/Wi-Fi Direct offline mesh mode)
+             - Safety (2-second SOS hold, 2D crowd level, triage & evacuation)
+/admin/*     Admin Console (Authorities & Platform Team, desktop-first, 5 sidebar items)
+             - Live Room (Center-stage 3D depth surface, real YOLO detections)
+             - Event Review (Pending queue, NOC viewer, approval checklist)
+             - Moderation (Flagged misinformation, duplicate route sentinel)
+             - Alerts & Broadcast (Emergency alerts, SOS inbox)
+             - Reports (Attendance, crowd levels, public transparency audit)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Asset Pipeline (`scripts/make_assets.py`)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The asset pipeline extracts frame-synced depth video, ByteTrack YOLOv8 person tracking, and spatial metadata from video feeds.
 
-## Learn More
+### Command
+One command per clip:
+```bash
+python scripts/make_assets.py public/drone.mp4 drone
+python scripts/make_assets.py public/cctv.mp4 cctv
+```
 
-To learn more about Next.js, take a look at the following resources:
+### Pipeline Operations
+1. **Depth Estimation**:
+   - Uses `Depth-Anything-V2-Small` (via Hugging Face `transformers`).
+   - Per-frame normalization with running min/max window to prevent luminance flickering.
+   - Temporal smoothing ($0.7 \times \text{previous} + 0.3 \times \text{current}$).
+   - Light bilateral filter ($d=5, \sigma_{\text{color}}=0.1, \sigma_{\text{space}}=5$) to keep sharp silhouette boundaries without melting.
+   - Outputs grayscale H.264 video (`yuv420p`) at the identical resolution and frame rate.
+2. **YOLOv8 Detection & Tracking**:
+   - Uses `ultralytics` YOLOv8 with built-in ByteTrack (`tracker="bytetrack.yaml"`).
+   - Filtered strictly to `class 0` (person) with `imgsz=960` for aerial high-angle footage.
+   - Writes `public/<prefix>_detections.json` with frame index, timestamp $t$, and bounding boxes `[{ id, x, y, w, h, conf }]`.
+3. **Metadata**:
+   - Generates `public/<prefix>_meta.json` containing resolution, fps, frame count, duration, and depth distribution statistics.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Design System & Readability Rules
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Typography**:
+  - Display: `Fraunces` (headlines only)
+  - UI: `Geist` (clean sans-serif)
+  - Data / Numbers: `Geist Mono` (tabular numerals)
+- **Strict Readability**:
+  - Body text: 15–16px minimum
+  - Labels: 13px minimum
+  - No all-caps mono text longer than 3 words
+  - Plain language: "Crowd level: Safe / Busy / Dangerous" (no academic jargon)
+  - Zero text placed on top of 3D canvas or video viewports
+- **Palette**:
+  - Public Portal: Warm paper (`#F4F1EA`), ink `#14141C`, indigo `#2E1F73`, vermilion `#FF4B1F` (SOS only), verified green `#1F9D6B` (seal only).
+  - Admin Console: Dark slate (`#0E0E14` background, `#16161F` panels, 1px hairline rules).
+  - Radii: 8–12px, soft layered shadows.

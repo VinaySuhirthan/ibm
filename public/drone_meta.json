@@ -1,0 +1,16 @@
+{
+  "prefix": "drone",
+  "sourceVideo": "drone.mp4",
+  "fps": 29.97002997002997,
+  "width": 1920,
+  "height": 1080,
+  "frameCount": 1920,
+  "duration": 20.02,
+  "depthStats": {
+    "min": 0.29780158400535583,
+    "max": 0.5136800408363342,
+    "mean": 0.4089210207263629
+  },
+  "modelUsed": "hf_pipeline",
+  "generatedAt": "2026-10-17 14:05:13"
+}

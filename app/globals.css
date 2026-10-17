@@ -1,26 +1,198 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
+@theme {
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-ui: 'Geist', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Public Portal (Warm Paper) Default */
+  --bg-paper: #F4F1EA;
+  --bg-card: #FFFFFF;
+  --bg-card-muted: #EBE7DC;
+  --text-ink: #14141C;
+  --text-muted: #65636D;
+  --border-subtle: rgba(20, 20, 28, 0.08);
+  --border-strong: rgba(20, 20, 28, 0.16);
+  
+  /* Brand Accents */
+  --color-indigo: #2E1F73;
+  --color-vermilion: #FF4B1F;
+  --color-verified: #1F9D6B;
+  --color-amber: #D97706;
+
+  /* Admin Console (Dark Slate) Tokens */
+  --admin-bg: #0E0E14;
+  --admin-panel: #16161F;
+  --admin-panel-subtle: #1C1C28;
+  --admin-text: #ECE8E1;
+  --admin-muted: #8E8D98;
+  --admin-hairline: rgba(236, 232, 225, 0.08);
+  --admin-hairline-bright: rgba(236, 232, 225, 0.16);
+
+  /* Typography */
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-ui: 'Geist', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  font-family: var(--font-ui);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-ink);
+  background-color: var(--bg-paper);
+}
+
+/* Headings: Tight, proportional line-heights to eliminate excessive gaps between text lines */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  text-wrap: balance;
+}
+
+h1 {
+  line-height: 1.15;
+}
+
+h2 {
+  line-height: 1.2;
+}
+
+h3 {
+  line-height: 1.25;
+}
+
+h4 {
+  line-height: 1.3;
+}
+
+p {
+  line-height: 1.5;
+  letter-spacing: -0.005em;
+  text-wrap: pretty;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.015em;
+}
+
+.font-ui {
+  font-family: var(--font-ui);
+}
+
+.font-mono-numbers {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Explicit line-height utilities to prevent loose Tailwind spacing */
+.leading-display {
+  line-height: 1.15 !important;
+}
+
+.leading-snug {
+  line-height: 1.25 !important;
+}
+
+.leading-normal {
+  line-height: 1.5 !important;
+}
+
+/* Strict Readability: Labels 13px minimum */
+.text-label {
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+
+/* Strict Readability: Body 15px with balanced 1.5 line height */
+.text-body {
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* Layered soft shadows for Light Theme */
+.shadow-soft {
+  box-shadow: 0 1px 3px rgba(20, 20, 28, 0.04), 0 4px 12px rgba(20, 20, 28, 0.04);
+}
+
+.shadow-elevation {
+  box-shadow: 0 2px 6px rgba(20, 20, 28, 0.06), 0 10px 24px rgba(20, 20, 28, 0.07);
+}
+
+/* Radius specifications */
+.rounded-civic-sm {
+  border-radius: 8px;
+}
+
+.rounded-civic {
+  border-radius: 10px;
+}
+
+.rounded-civic-lg {
+  border-radius: 12px;
+}
+
+/* Animated Verified Stamp Seal */
+@keyframes stampIn {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-stamp {
+  animation: stampIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Subtle pulse for live state */
+@keyframes liveDot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.9);
+  }
+}
+
+.animate-live-dot {
+  animation: liveDot 2s ease-in-out infinite;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(142, 141, 152, 0.3);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(142, 141, 152, 0.5);
 }

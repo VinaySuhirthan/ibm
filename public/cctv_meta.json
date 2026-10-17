@@ -1,0 +1,16 @@
+{
+  "prefix": "cctv",
+  "sourceVideo": "cctv.mp4",
+  "fps": 29.97002997002997,
+  "width": 1920,
+  "height": 1080,
+  "frameCount": 3493,
+  "duration": 20.02,
+  "depthStats": {
+    "min": 0.1124572679400444,
+    "max": 0.5065155029296875,
+    "mean": 0.3408416518356119
+  },
+  "modelUsed": "hf_pipeline",
+  "generatedAt": "2026-10-17 14:11:01"
+}
