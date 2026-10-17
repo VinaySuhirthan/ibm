@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, Suspense } from 'react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { RadialRiskDial } from '../../components/ui/RadialRiskDial';
 import { VIDEO_FEEDS_CONFIG, FeedOption, DEFAULT_FEED_ID } from '../../lib/videoConfig';
 import { EVENTS_FIXTURE } from '../../lib/fixtures';
@@ -33,11 +35,19 @@ interface FrameDetection {
   boxes: DetectionBox[];
 }
 
-export default function AdminLiveRoomPage() {
+function AdminLiveRoomContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const eventIdParam = searchParams.get('event');
+
   // All Events State
   const [eventsList, setEventsList] = useState<CivicEvent[]>(EVENTS_FIXTURE);
-  // Default is null so admin sees the clean list of all events first!
-  const [selectedEvent, setSelectedEvent] = useState<CivicEvent | null>(null);
+
+  // Sync selected event from URL search param
+  const selectedEvent = useMemo(() => {
+    if (!eventIdParam) return null;
+    return eventsList.find((ev) => ev.id === eventIdParam) || null;
+  }, [eventIdParam, eventsList]);
 
   // Available feeds list (supports custom uploaded videos)
   const [feeds, setFeeds] = useState<FeedOption[]>(VIDEO_FEEDS_CONFIG);
@@ -101,15 +111,15 @@ export default function AdminLiveRoomPage() {
     triagePins: true
   });
 
-  // Handle Event Selection
+  // Handle Event Selection with URL push
   const handleSelectEvent = (event: CivicEvent) => {
-    setSelectedEvent(event);
     // Auto-map feed if event specifies one
     if (event.id === 'ev-jantar-mantar') {
       setActiveFeedId('CCTV-01');
     } else {
       setActiveFeedId('DRONE-01');
     }
+    router.push(`/admin?event=${encodeURIComponent(event.id)}`);
   };
 
   // Video File Upload Handler
@@ -207,7 +217,7 @@ export default function AdminLiveRoomPage() {
     setFeeds((prev) => [newFeed, ...prev]);
     setEventsList((prev) => [newEvent, ...prev]);
     setActiveFeedId(feedId);
-    setSelectedEvent(newEvent);
+    router.push(`/admin?event=${encodeURIComponent(newEvent.id)}`);
     setIsCreateModalOpen(false);
 
     // Reset draft fields
@@ -779,13 +789,13 @@ export default function AdminLiveRoomPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3.5 border-b border-[rgba(236,232,225,0.08)] gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => setSelectedEvent(null)}
-              className="px-2.5 py-1 rounded-civic-sm bg-[#16161F] hover:bg-[#1C1C28] text-[#8E8D98] hover:text-white text-[12px] font-semibold flex items-center gap-1.5 border border-[rgba(236,232,225,0.08)] transition-all"
+            <Link
+              href="/admin"
+              className="px-3 py-1.5 rounded-civic-sm bg-[#16161F] hover:bg-[#1C1C28] text-[#ECE8E1] hover:text-white text-[12px] font-semibold flex items-center gap-1.5 border border-[rgba(236,232,225,0.08)] transition-all shadow-sm"
             >
               <IconArrowLeft size={14} />
               <span>Back to All Events</span>
-            </button>
+            </Link>
             <span className="px-2 py-0.5 rounded-full bg-[rgba(255,75,31,0.12)] text-[#FF4B1F] text-[11px] font-semibold">
               LIVE MONITORING
             </span>
@@ -1081,5 +1091,13 @@ export default function AdminLiveRoomPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AdminLiveRoomPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-[#8E8D98] font-mono-numbers">Loading assembly intelligence...</div>}>
+      <AdminLiveRoomContent />
+    </Suspense>
   );
 }

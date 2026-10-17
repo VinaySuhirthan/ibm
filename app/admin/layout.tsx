@@ -20,7 +20,7 @@ export default function AdminConsoleLayout({
   const pathname = usePathname();
 
   const navItems = [
-    { href: '/admin', label: 'Live Room', icon: IconLiveRoom, exact: true },
+    { href: '/admin', label: 'All Events', icon: IconLiveRoom, exact: true },
     { href: '/admin/events', label: 'Event Review', icon: IconEventReview },
     { href: '/admin/moderation', label: 'Moderation', icon: IconModeration },
     { href: '/admin/broadcast', label: 'Alerts & Broadcast', icon: IconBroadcast },
