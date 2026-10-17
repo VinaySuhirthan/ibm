@@ -2,12 +2,26 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import {
   IconVerifiedSeal,
   IconSafetyShield,
   IconMesh
 } from '../../components/icons/BespokeIcons';
 import { EVENTS_FIXTURE } from '../../lib/fixtures';
+
+const LiveProtestHub3D = dynamic(
+  () => import('../../components/3d/LiveProtestHub3D').then((m) => m.LiveProtestHub3D),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-[480px] bg-[#FFFFFF] rounded-civic-lg border border-[rgba(20,20,28,0.08)] shadow-soft flex flex-col items-center justify-center gap-3 text-[#65636D]">
+        <div className="w-8 h-8 rounded-full border-2 border-[#1F9D6B] border-t-transparent animate-spin" />
+        <span className="text-[13px] font-mono-numbers">Initializing 3D Assembly Cartography...</span>
+      </div>
+    )
+  }
+);
 
 export default function PublicHomePage() {
   const [offlineMeshActive, setOfflineMeshActive] = useState(false);
@@ -49,95 +63,8 @@ export default function PublicHomePage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* LEFT COLUMN: Protest Hub Map & Nearby Verified Events (8 Columns) */}
         <div className="lg:col-span-8 flex flex-col gap-6">
-          {/* Protest Hub Radar & Safe Corridors Card */}
-          <div className="p-5 sm:p-6 bg-[#FFFFFF] rounded-civic-lg border border-[rgba(20,20,28,0.08)] shadow-soft flex flex-col gap-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[rgba(20,20,28,0.08)]">
-              <div>
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-[#1F9D6B]">
-                  Real-Time Assembly Cartography
-                </span>
-                <h2 className="font-display text-2xl font-semibold text-[#14141C] mt-0.5 tracking-tight leading-snug">
-                  Protest Hub & Safe Corridors
-                </h2>
-              </div>
-              <div className="flex items-center gap-2 text-[13px] font-mono-numbers text-[#65636D]">
-                <span className="w-2 h-2 rounded-full bg-[#1F9D6B]" />
-                <span>~1,420 people in sector</span>
-              </div>
-            </div>
-
-            {/* Stylized Visual Cartography Map */}
-            <div className="relative w-full h-[280px] sm:h-[320px] bg-[#EAE6DC] rounded-civic overflow-hidden border border-[rgba(20,20,28,0.06)] flex items-center justify-center">
-              <svg className="w-full h-full" viewBox="0 0 800 320" preserveAspectRatio="xMidYMid slice">
-                {/* Street grid representation */}
-                <line x1="0" y1="80" x2="800" y2="80" stroke="rgba(20,20,28,0.08)" strokeWidth="8" />
-                <line x1="0" y1="220" x2="800" y2="220" stroke="rgba(20,20,28,0.08)" strokeWidth="12" />
-                <line x1="200" y1="0" x2="200" y2="320" stroke="rgba(20,20,28,0.08)" strokeWidth="10" />
-                <line x1="550" y1="0" x2="550" y2="320" stroke="rgba(20,20,28,0.08)" strokeWidth="8" />
-
-                {/* Safe Assembly Corridor Ribbon */}
-                <path
-                  d="M 60 220 Q 300 220 420 160 T 740 100"
-                  fill="none"
-                  stroke="#1F9D6B"
-                  strokeWidth="8"
-                  strokeDasharray="8 6"
-                />
-
-                {/* Crowd Density Heat Cluster */}
-                <circle cx="420" cy="160" r="55" fill="rgba(217, 119, 6, 0.25)" />
-                <circle cx="420" cy="160" r="28" fill="rgba(217, 119, 6, 0.45)" />
-
-                {/* You Marker */}
-                <g transform="translate(200, 220)">
-                  <circle cx="0" cy="0" r="12" fill="rgba(31,157,107,0.3)" className="animate-ping" />
-                  <circle cx="0" cy="0" r="7" fill="#1F9D6B" stroke="#FFFFFF" strokeWidth="2.5" />
-                  <text x="14" y="5" fill="#14141C" fontSize="13" fontWeight="600" fontFamily="Geist">
-                    You (North Corridor)
-                  </text>
-                </g>
-
-                {/* Water Point 1 */}
-                <g transform="translate(320, 190)">
-                  <circle cx="0" cy="0" r="6" fill="#2E1F73" />
-                  <text x="10" y="4" fill="#2E1F73" fontSize="12" fontWeight="500">
-                    💧 Water Point #1
-                  </text>
-                </g>
-
-                {/* Field Medical Tent Alpha */}
-                <g transform="translate(600, 120)">
-                  <circle cx="0" cy="0" r="7" fill="#FF4B1F" />
-                  <text x="10" y="4" fill="#FF4B1F" fontSize="12" fontWeight="600">
-                    ✚ Triage Tent Alpha (140m)
-                  </text>
-                </g>
-              </svg>
-
-              {/* In-Map AI Recommendation Pill */}
-              <div className="absolute bottom-3 left-3 right-3 sm:right-auto bg-[#FFFFFF]/95 backdrop-blur-sm px-3.5 py-2 rounded-civic-sm border border-[rgba(20,20,28,0.1)] shadow-soft text-[13px] text-[#14141C] flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#1F9D6B] shrink-0" />
-                <span className="font-semibold text-[#14141C]">AI Route Advice:</span>
-                <span className="text-[#65636D]">West Gate is clear. Use North Ramp to bypass bottleneck.</span>
-              </div>
-            </div>
-
-            {/* Quick Metrics Bar */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-              <div className="p-3 bg-[#F4F1EA] rounded-civic-sm border border-[rgba(20,20,28,0.06)]">
-                <span className="text-[12px] text-[#65636D] block">Local Crowd Level</span>
-                <span className="text-[14px] font-semibold text-[#1F9D6B]">Safe (Normal Flow)</span>
-              </div>
-              <div className="p-3 bg-[#F4F1EA] rounded-civic-sm border border-[rgba(20,20,28,0.06)]">
-                <span className="text-[12px] text-[#65636D] block">Nearest Medical Aid</span>
-                <span className="text-[14px] font-semibold text-[#14141C]">140m (2 min walk)</span>
-              </div>
-              <div className="p-3 bg-[#F4F1EA] rounded-civic-sm border border-[rgba(20,20,28,0.06)]">
-                <span className="text-[12px] text-[#65636D] block">Primary Egress</span>
-                <span className="text-[14px] font-semibold text-[#14141C]">North Ramp Open</span>
-              </div>
-            </div>
-          </div>
+          {/* Live 3D Assembly Cartography & Safe Corridors Card */}
+          <LiveProtestHub3D />
 
           {/* Nearby Verified Public Events List */}
           <div className="flex flex-col gap-3.5">
